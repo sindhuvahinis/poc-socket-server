@@ -2,13 +2,27 @@
 Proof of concept for interprocess communication between java and python
 through socket connection
 """
-import os.path
 import socket
-import sys
 import numpy as np
 
+from protocol.recv_data_handler import retrieve_processing_file
 from util.data_conversion import djl_encode
 from util.packaging_utils import get_class_name
+
+
+def receive_python_file(cl_sock):
+    decoded = retrieve_processing_file(cl_sock)
+    print(f"Data received is {decoded}")
+    return decoded
+
+
+def run_processor(decoded):
+    processor_type = "pre-process" if decoded["process_type_code"] == 0 else "post-process"
+    processor_class = get_class_name(decoded["python_file_path"], decoded["function_name"])
+    preprocessor = processor_class()
+    data = getattr(preprocessor, decoded["function_name"])()
+    print(f'{processor_type} data {data}')
+    return data
 
 
 class SocketServer(object):
@@ -22,12 +36,6 @@ class SocketServer(object):
         self.int_data = np.arange(9).reshape(3, 3)
         self.float_data = np.arange(9.0).reshape(3, 3)
 
-    def run_preprocessor(self, file_name):
-        preprocessor_class = get_class_name(file_name, "preprocess")
-        preprocessor = preprocessor_class()
-        data = getattr(preprocessor, "preprocess")()
-        print(f'preprocessing data {data}')
-
     def run_server(self):
         try:
             self.sock.bind((self.sock_name, self.port))
@@ -40,12 +48,10 @@ class SocketServer(object):
                 cl_sock, _ = self.sock.accept()
                 print(f"Client {cl_num} is connected")
 
-                recv_message = cl_sock.recv(2000)
-                print(f"Data received is {recv_message}")
-
-                data = djl_encode([self.int_data, self.float_data])
-                is_sent = cl_sock.sendall(data)
-
+                decoded = receive_python_file(cl_sock)
+                data_list = run_processor(decoded)
+                byte_data = djl_encode(data_list)
+                is_sent = cl_sock.sendall(byte_data)
                 if not is_sent:
                     print('Data is sent')
 
@@ -56,9 +62,5 @@ class SocketServer(object):
 
 
 if __name__ == "__main__":
-    sys.path.append(os.path.abspath('resources/'))
-    print(sys.path)
-
     server = SocketServer()
-    # server.run_server()
-    server.run_preprocessor('pre_processing.py')
+    server.run_server()
