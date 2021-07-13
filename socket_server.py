@@ -5,24 +5,8 @@ through socket connection
 import socket
 import numpy as np
 
-from protocol.recv_data_handler import retrieve_processing_file
-from util.data_conversion import djl_encode
-from util.packaging_utils import get_class_name
-
-
-def receive_python_file(cl_sock):
-    decoded = retrieve_processing_file(cl_sock)
-    print(f"Data received is {decoded}")
-    return decoded
-
-
-def run_processor(decoded):
-    processor_type = "pre-process" if decoded["process_type_code"] == 0 else "post-process"
-    processor_class = get_class_name(decoded["python_file_path"], decoded["function_name"])
-    preprocessor = processor_class()
-    data = getattr(preprocessor, decoded["function_name"])()
-    print(f'{processor_type} data {data}')
-    return data
+from process_exec_handler import run_processor
+from protocol.request_handler import retrieve_request
 
 
 class SocketServer(object):
@@ -42,23 +26,21 @@ class SocketServer(object):
             self.sock.listen(128)
             print('Server is started...')
 
-            cl_num = 0
+            cl_sock, _ = self.sock.accept()
+            print(f"Client is connected")
+
             while True:
-                cl_num += 1
-                cl_sock, _ = self.sock.accept()
-                print(f"Client {cl_num} is connected")
+                request = retrieve_request(cl_sock)
+                response = run_processor(request)
 
-                decoded = receive_python_file(cl_sock)
-                data_list = run_processor(decoded)
-                byte_data = djl_encode(data_list)
-                is_sent = cl_sock.sendall(byte_data)
-                if not is_sent:
-                    print('Data is sent')
-
-                cl_sock.close()
-                print(f"Client {cl_num} connection is closed")
+                is_sent = cl_sock.sendall(response)
+                if is_sent:
+                    print("Response is all sent")
+        except:
+            print("Client is disconnected")
         finally:
             self.sock.close()
+            print("Server is shutdown")
 
 
 if __name__ == "__main__":
