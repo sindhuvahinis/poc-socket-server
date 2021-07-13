@@ -3,6 +3,9 @@ import struct
 
 import numpy as np
 
+from protocol.input import Input
+from protocol.request import Request
+
 char_size = 2
 short_size = 2
 int_size = 4
@@ -97,3 +100,42 @@ def retrieve_processing_file(conn):
     decoded_map["function_name"] = function_name
 
     return decoded_map
+
+
+def retrieve_request(conn):
+    request = Request()
+
+    process_type_code = _retrieve_int(conn)
+    request.set_process_type_code(process_type_code)
+
+    python_file = _retrieve_str(conn)
+    request.set_python_file(python_file)
+
+    function_name = _retrieve_str(conn)
+    request.set_function_name(function_name)
+
+    content_len = _retrieve_int(conn)
+    content = _retrieve_buffer(conn, content_len)
+    request.set_content(content)
+
+    return request
+
+
+def retrieve_input_data(conn):
+    input = Input()
+    req_id = _retrieve_str(conn)
+    input.set_request_id(req_id)
+    map_size = _retrieve_int(conn)
+    for _ in range(map_size):
+        key = _retrieve_str(conn)
+        val = _retrieve_str(conn)
+        input.add_property(key, val)
+
+    content_size = _retrieve_int(conn)
+    for _ in range(content_size):
+        key = _retrieve_str(conn)
+        val_len = _retrieve_int(conn)
+        val = _retrieve_buffer(conn, val_len)
+        input.add_content_pair(key, val)
+
+    return input
