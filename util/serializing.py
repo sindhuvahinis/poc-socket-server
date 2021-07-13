@@ -50,3 +50,24 @@ def djl_encode(ndlist: List[np.ndarray]) -> bytearray:
         arr.extend(_set_int(len(nd_bytes)))
         arr.extend(nd_bytes)  # make it big endian
     return arr
+
+
+def output_encode(output) -> bytearray:
+    arr = bytearray()
+    arr.extend(_set_str(output.get_request_id()))
+    arr.extend(_set_int(output.get_code()))
+    arr.extend(_set_str(output.get_message()))
+
+    properties = output.get_properties()
+    map_size = len(properties)
+    arr.extend(_set_int(map_size))
+    if properties:
+        for key, val in output.get_properties().items():
+            arr.extend(_set_str(key))
+            arr.extend(_set_str(val))
+
+    content = output.content
+    arr.extend(_set_int(len(content)))
+    arr.extend(content)
+
+    return arr
