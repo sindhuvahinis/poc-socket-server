@@ -11,8 +11,10 @@ class Preprocessor(object):
     def initialize(self):
         pass
 
-    def postprocess(self, np_list:  List[np.ndarray]) -> Output:
-        output = Output()
+    def postprocess(self, np_list:  List[np.ndarray], request_id: str) -> Output:
+        output = Output(request_id)
+        output.set_code(200)
+        output.set_message("successful")
         int_data = np.arange(9).reshape(3, 3)
         float_data = np.arange(9.0).reshape(3, 3)
         np_list_op = [int_data, float_data]

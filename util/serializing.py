@@ -69,5 +69,11 @@ def output_encode(output) -> bytearray:
     content = output.content
     arr.extend(_set_int(len(content)))
     arr.extend(content)
+    return arr
 
+
+def response_encode(response) -> bytearray:
+    arr = bytearray()
+    arr.extend(_set_int(response.len))
+    arr.extend(response.buffer_arr)
     return arr

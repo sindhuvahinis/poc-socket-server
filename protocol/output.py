@@ -1,6 +1,6 @@
 class Output(object):
-    def __init__(self):
-        self.request_id = None
+    def __init__(self, request_id):
+        self.request_id = request_id
         self.code = None
         self.message = None
         self.properties = dict()

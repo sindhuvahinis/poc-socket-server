@@ -32,9 +32,8 @@ class SocketServer(object):
             while True:
                 request = retrieve_request(cl_sock)
                 response = run_processor(request)
-
                 is_sent = cl_sock.sendall(response)
-                if is_sent:
+                if not is_sent:
                     print("Response is all sent")
         except:
             print("Client is disconnected")
