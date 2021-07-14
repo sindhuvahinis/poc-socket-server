@@ -24,18 +24,22 @@ def _exec_post_processor(request, nd_list):
     return data
 
 
+def construct_enc_response(arr: bytearray) -> bytearray:
+    response = Response()
+    response.set_len(len(arr))
+    response.set_buffer_arr(arr)
+    return response_encode(response)
+
 def run_processor(request: Request) -> bytearray:
     if request.process_type_code == 0:
         input = input_decode(request.content)
         response_data = _exec_pre_processor(request, input)
-        return djl_encode(response_data)
+        arr = djl_encode(response_data)
+        return construct_enc_response(arr)
     elif request.process_type_code == 1:
         nd_list = djl_decode(request.content)
         response_data = _exec_post_processor(request, nd_list)
         arr = output_encode(response_data)
-        response = Response()
-        response.set_len(len(arr))
-        response.set_buffer_arr(arr)
-        return response_encode(response)
+        return construct_enc_response(arr)
     else:
         raise ValueError("Error in request process type code.")
