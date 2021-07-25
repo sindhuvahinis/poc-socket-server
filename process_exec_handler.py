@@ -7,20 +7,20 @@ from util.packaging_util import get_class_name
 
 
 def _exec_pre_processor(request, input):
-    print(f'preprocess request {request}')
+    #print(f'preprocess request {request}')
     processor_class = get_class_name(request.python_file, request.function_name)
     preprocessor = processor_class()
     data = getattr(preprocessor, request.function_name)(input)
-    print(f'preprocess output after exec {data}')
+    #print(f'preprocess output after exec {data}')
     return data
 
 
 def _exec_post_processor(request, nd_list):
-    print(f'postprocess request {request}')
+    #print(f'postprocess request {request}')
     processor_class = get_class_name(request.python_file, request.function_name)
     preprocessor = processor_class()
     data = getattr(preprocessor, request.function_name)(nd_list, "1")
-    print(f'postprocess output after exec {data}')
+    #print(f'postprocess output after exec {data}')
     return data
 
 

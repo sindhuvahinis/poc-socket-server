@@ -27,7 +27,7 @@ class SocketServer(object):
             print('Server is started...')
 
             cl_sock, _ = self.sock.accept()
-            print(f"Client is connected")
+            print("Client is connected")
 
             while True:
                 request = retrieve_request(cl_sock)

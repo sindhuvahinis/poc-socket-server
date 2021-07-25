@@ -52,17 +52,17 @@ def input_decode(arr: bytearray) -> Input:
     input = Input()
     req_id, idx = get_str(arr, idx)
     input.set_request_id(req_id)
-    prop_size, idx = get_byte_as_int(arr, idx)
+    prop_size, idx = get_int(arr, idx)
 
     for _ in range(prop_size):
         key, idx = get_str(arr, idx)
         val, idx = get_str(arr, idx)
         input.add_property(key, val)
 
-    content_size, idx = get_byte_as_int(arr, idx)
+    content_size, idx = get_int(arr, idx)
     for _ in range(content_size):
         key, idx = get_str(arr, idx)
-        val_len, idx = get_byte_as_int(arr, idx)
+        val_len, idx = get_int(arr, idx)
         val, idx = get_bytes(arr, 0, val_len)
         input.add_content_pair(key, val)
 
