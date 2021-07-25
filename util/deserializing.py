@@ -63,7 +63,7 @@ def input_decode(arr: bytearray) -> Input:
     for _ in range(content_size):
         key, idx = get_str(arr, idx)
         val_len, idx = get_int(arr, idx)
-        val, idx = get_bytes(arr, 0, val_len)
+        val, idx = get_bytes(arr, idx, val_len)
         input.add_content_pair(key, val)
 
     return input

@@ -44,7 +44,7 @@ def djl_encode(ndlist: List[np.ndarray]) -> bytearray:
         arr.extend(_set_int(VERSION))
         arr.append(0)  # no name
         arr.extend(_set_str("default"))
-        arr.extend(_set_str(str(nd.dtype).upper()))
+        arr.extend(_set_str(str(nd.dtype[0]).upper()))
         shape_encode(nd.shape, arr)
         nd_bytes = nd.newbyteorder('>').tobytes("C")
         arr.extend(_set_int(len(nd_bytes)))
