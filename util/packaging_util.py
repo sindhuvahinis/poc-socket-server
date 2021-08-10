@@ -31,7 +31,6 @@ def get_class_name(file_name, function_name):
     module = file_name[:-3]
     module = module.split("/")[-1]
     sys.path.append(file_name[:-(len(module) + 3)])
-    print(file_name[:-(len(module) + 3)])
     module = importlib.import_module(module)
 
     if module is None:
