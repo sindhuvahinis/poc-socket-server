@@ -28,9 +28,6 @@ class Input(object):
     def add_property(self, key: str, val: str):
         self.properties[key] = val
 
-    def add_content_pair(self, key: str, val: str):
-        self.content[key] = val
-
 
 
 

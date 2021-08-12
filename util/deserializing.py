@@ -4,6 +4,7 @@ from typing import Tuple, List
 import numpy as np
 
 from protocol.input import Input
+from util.pair_list import PairList
 
 
 def get_byte_as_int(encoded: bytearray, idx: int) -> Tuple[int, int]:
@@ -60,12 +61,19 @@ def input_decode(arr: bytearray) -> Input:
         input.add_property(key, val)
 
     content_size, idx = get_int(arr, idx)
+    keys = []
     for _ in range(content_size):
         key, idx = get_str(arr, idx)
+        keys.append(key)
+
+    values = []
+    for _ in range(content_size):
         val_len, idx = get_int(arr, idx)
         val, idx = get_bytes(arr, idx, val_len)
-        input.add_content_pair(key, val)
+        values.append(val)
 
+    content = PairList(keys=keys, values=values)
+    input.set_content(content)
     return input
 
 
