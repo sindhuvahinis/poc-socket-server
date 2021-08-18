@@ -46,7 +46,7 @@ class PairList(object):
         elif key:
             if key not in self.keys:
                 return None
-            key_index = self.keys.index(index)
+            key_index = self.keys.index(key)
             return self.values[key_index]
 
     def key_at(self, index: int):
@@ -55,10 +55,10 @@ class PairList(object):
     def value_at(self, index: int):
         return self.values.index(index)
 
-    def keys(self):
+    def get_keys(self):
         return self.keys
 
-    def values(self):
+    def get_values(self):
         return self.values
 
     # TODO: implement the remaining functions

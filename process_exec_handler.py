@@ -35,8 +35,8 @@ def run_processor(request: Request) -> bytearray:
     if request.process_type_code == 0:
         input = input_decode(request.content)
         response_data = _exec_pre_processor(request, input)
-        arr = djl_encode(response_data)
-        return construct_enc_response(arr)
+        #arr = djl_encode(response_data)
+        return construct_enc_response(response_data)
     elif request.process_type_code == 1:
         nd_list = djl_decode(request.content)
         response_data = _exec_post_processor(request, nd_list)
